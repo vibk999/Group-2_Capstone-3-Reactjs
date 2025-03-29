@@ -1,45 +1,47 @@
-import React, { useState, useEffect } from "react";
-import { fetchMovieCinema, fetchMovieDetail } from "../../store/action/movie";
-import { connect } from "react-redux";
+import React, { useEffect, useState } from "react";
+import { useSelector, useDispatch } from "react-redux";
 import {
   Box,
   CardActionArea,
   CardMedia,
   Grid,
   Typography,
-  withStyles,
   Button,
   CardContent,
-} from "@material-ui/core";
-import { styles } from "./style";
-import { Description } from "@material-ui/icons";
+} from "@mui/material";
+import { Description } from "@mui/icons-material";
+
+import { fetchMovieDetail, fetchMovieCinema } from "../../store/action/movie"; // Redux Toolkit slice
 import VerticalTabs from "../../components/VerticalTabs";
 import Layout from "../../HOCs/Layout";
 import Player from "../../components/ReactPlayer";
+import { DetailContainer, BoxButton, DetailContent } from "./styles";
+import { useParams } from "react-router";
 
-const Detail = (props) => {
+const Detail = () => {
+  const params = useParams();
+  const dispatch = useDispatch();
+  const { movieDetail, movieCinemaList } = useSelector((state) => state.movie); // Redux state từ slice movie
+
   const [open, setOpen] = useState(false);
-  const { hinhAnh, maPhim, moTa, tenPhim, trailer } = props.movieDetail;
-  const { detail, detailContent, boxButton } = props.classes;
+
+  // Hàm toggle modal
+  const handleToggleModal = () => setOpen((prev) => !prev);
 
   useEffect(() => {
-    const movieId = props.match.params.id;
-    props.dispatch(fetchMovieDetail(movieId));
-    props.dispatch(fetchMovieCinema);
-  }, [props]);
+    const movieId = params.id;
+    if (movieId) {
+      dispatch(fetchMovieDetail(movieId));
+    }
+    dispatch(fetchMovieCinema());
+  }, [dispatch, params.id]);
 
-  const onOpenModal = () => {
-    setOpen(!open);
-  };
-
-  const onCloseModal = () => {
-    setOpen(false);
-  };
+  const { hinhAnh, maPhim, moTa, tenPhim, trailer } = movieDetail;
 
   return (
     <Layout>
-      <Box className={detail}>
-        <Grid container spacing={12}>
+      <DetailContainer>
+        <Grid container spacing={3}>
           <Grid item xs={12} md={6}>
             <CardActionArea>
               <CardMedia
@@ -49,39 +51,42 @@ const Detail = (props) => {
               />
             </CardActionArea>
           </Grid>
-          <Grid className={detailContent} item xs={12} md={6}>
+
+          <DetailContent item xs={12} md={6}>
             <CardContent>
-              <Typography className="name">{tenPhim}</Typography>
-              <Typography className="description">
-                <Description />
-                {moTa}
+              <Typography variant="h4" className="name">
+                {tenPhim}
+              </Typography>
+              <Typography variant="body1" className="description">
+                <Description /> {moTa}
               </Typography>
             </CardContent>
-            <Box className={boxButton}>
+
+            <BoxButton>
               <Button
-                onClick={onOpenModal}
+                onClick={handleToggleModal}
                 className="button"
-                size="small"
+                variant="contained"
                 color="primary"
               >
                 Xem Trailer
               </Button>
-              <Player open={open} toggleModal={onCloseModal} url={trailer} />
-            </Box>
-          </Grid>
+              <Player
+                open={open}
+                toggleModal={handleToggleModal}
+                url={trailer}
+              />
+            </BoxButton>
+          </DetailContent>
         </Grid>
+
         <VerticalTabs
-          movieCinemaList={props.movieCinemaList}
-          movieDetail={props.movieDetail}
+          movieCinemaList={movieCinemaList}
+          movieDetail={movieDetail}
         />
-      </Box>
+      </DetailContainer>
     </Layout>
   );
 };
 
-const mapStateToProps = (state) => ({
-  movieDetail: state.movie.movieDetail,
-  movieCinemaList: state.movie.movieCinemaList,
-});
-
-export default connect(mapStateToProps)(withStyles(styles)(Detail));
+export default Detail;

@@ -1,33 +1,24 @@
-import React, { Component } from 'react'
-import { connect } from "react-redux"
-import { fetchMovieBanner } from '../../store/action/movie'
-import Carousel from 'react-material-ui-carousel'
-import ItemCarousel from './ItemCarousel'
+import React, { useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { fetchMovieBanner } from "../../store/action/movie";
+import Carousel from "react-material-ui-carousel";
+import ItemCarousel from "./ItemCarousel";
 
-class CarouselBanner extends Component {
-    render() {
-        return (
-            <Carousel>
-                {
-                    this.props.movieBanner.map((item) => {
-                        return (
-                            <ItemCarousel key={item.maBanner} item={item} />
-                        )
-                    })
-                }
-            </Carousel>
-        )
-    }
+const CarouselBanner = () => {
+  const dispatch = useDispatch();
+  const { movieBanner } = useSelector((state) => state.movie);
 
-    componentDidMount() {
-        this.props.dispatch(fetchMovieBanner);
-    }
-}
+  useEffect(() => {
+    dispatch(fetchMovieBanner());
+  }, [dispatch]);
 
-const mapStateToProps = (state) => {
-    return {
-        movieBanner: state.movie.movieBanner
-    }
-}
+  return (
+    <Carousel>
+      {movieBanner.map((item) => (
+        <ItemCarousel key={item.maBanner} item={item} />
+      ))}
+    </Carousel>
+  );
+};
 
-export default connect(mapStateToProps)(CarouselBanner)
+export default CarouselBanner;

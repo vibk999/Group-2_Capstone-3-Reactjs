@@ -1,114 +1,113 @@
-import React, { Component } from 'react'
-import { Container, Button, TextField, withStyles } from '@material-ui/core'
-import { connect } from 'react-redux'
-import { styles } from "./style"
-import { request } from '../../api/request';
-import 'react-responsive-modal/styles.css';
-import { Modal } from 'react-responsive-modal';
+import React, { useEffect, useState } from "react";
+import {
+  Container,
+  Button,
+  TextField,
+  Box,
+  Modal,
+  Typography,
+  styled,
+} from "@mui/material";
+import { useSelector, useDispatch } from "react-redux";
+import { fetchMe, updateAccountInfo } from "../../store/action/auth";
 
-class AccountInfor extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            formValue: {
-                taiKhoan: "",
-                matKhau: "",
-                hoTen: "",
-                soDt: "",
-                email: "",
-                maLoaiNguoiDung: "",
-                maNhom: "GP01"
-            },
-            open: false,
-            apiResult: ""
-        }
+const FormInput = styled(Box)({
+  marginBottom: "20px",
+});
+
+const ModalContent = styled(Box)({
+  backgroundColor: "white",
+  padding: "20px",
+  textAlign: "center",
+  borderRadius: "10px",
+});
+
+const AccountInfor = () => {
+  const dispatch = useDispatch();
+  const { accountInfor } = useSelector((state) => state.user);
+  const [formValue, setFormValue] = useState({
+    taiKhoan: "",
+    matKhau: "",
+    hoTen: "",
+    soDt: "",
+    email: "",
+    maLoaiNguoiDung: "",
+    maNhom: "GP01",
+  });
+  const [open, setOpen] = useState(false);
+  const [apiResult, setApiResult] = useState("");
+
+  useEffect(() => {
+    dispatch(fetchMe()); // Fetch thông tin tài khoản từ Redux store
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (accountInfor) {
+      setFormValue({
+        taiKhoan: accountInfor.taiKhoan || "",
+        matKhau: accountInfor.matKhau || "",
+        hoTen: accountInfor.hoTen || "",
+        soDt: accountInfor.soDt || "",
+        email: accountInfor.email || "",
+        maLoaiNguoiDung: "khachHang",
+        maNhom: "GP01",
+      });
     }
+  }, [accountInfor]);
 
-    onCloseModal = () => {
-        this.setState({
-            open: false
-        })
+  const handleChange = (event) => {
+    setFormValue({
+      ...formValue,
+      [event.target.name]: event.target.value,
+    });
+  };
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    const response = await dispatch(updateAccountInfo(formValue));
+
+    if (response.error) {
+      setApiResult("Cập nhật thất bại: " + response.error.message);
+    } else {
+      setApiResult("Cập nhật thành công!");
     }
+    setOpen(true);
+  };
 
-    handleChange = (event) => {
-        this.setState({
-            formValue: {
-                ...this.state.formValue,
-                [event.target.name]: event.target.value
-            }
-        })
-    }
+  const onCloseModal = () => setOpen(false);
 
-    handleSubmit = (event) => {
-        // Ngăn việc load lại trang khi submit dữ liệu
-        event.preventDefault();
-        request({
-            method: "PUT",
-            url: "https://movienew.cybersoft.edu.vn/api/QuanLyNguoiDung/CapNhatThongTinNguoiDung",
-            data: this.state.formValue,
-        }).then((res) => {
-            console.log("res update user infor", res.data);
-            this.setState({
-                apiResult: res.data.message,
-                open: true
-            })
-        }).catch((err) => {
-            console.log("err update user infor", { ...err });
-            this.setState({
-                apiResult: err.response.data.message + " Cập nhật thất bại!!!",
-                open: true
-            })
-        });
-    }
+  return (
+    <Container maxWidth="lg" sx={{ padding: 0, marginTop: "100px" }}>
+      <Container maxWidth="sm">
+        <form onSubmit={handleSubmit}>
+          {["taiKhoan", "matKhau", "hoTen", "email", "soDt"].map((field) => (
+            <FormInput key={field}>
+              <TextField
+                onChange={handleChange}
+                name={field}
+                value={formValue[field]}
+                fullWidth
+                type={field === "matKhau" ? "password" : "text"}
+                label={field === "taiKhoan" ? "Tài khoản" : field}
+                variant="outlined"
+              />
+            </FormInput>
+          ))}
+          <Box sx={{ display: "flex", justifyContent: "center" }}>
+            <Button type="submit" variant="contained" color="primary">
+              Cập nhật
+            </Button>
+          </Box>
+        </form>
+      </Container>
 
-    render() {
-        const { formInput } = this.props.classes;
-        return (
-            <Container maxWidth="lg" style={{ padding: "0px", marginTop: "100px" }}>
-                <Container maxWidth="sm">
-                    <form onSubmit={this.handleSubmit}>
-                        <div className={formInput} >
-                            <TextField onChange={this.handleChange} name="taiKhoan" value={this.state.formValue.taiKhoan} fullWidth label="Tài khoản" variant="outlined" />
-                        </div>
-                        <div className={formInput} >
-                            <TextField onChange={this.handleChange} name="matKhau" value={this.state.formValue.matKhau} fullWidth type="password" label="Mật khẩu" variant="outlined" />
-                        </div>
-                        <div className={formInput} >
-                            <TextField onChange={this.handleChange} name="hoTen" value={this.state.formValue.hoTen} fullWidth label="Họ Tên" variant="outlined" />
-                        </div>
-                        <div className={formInput} >
-                            <TextField onChange={this.handleChange} name="email" value={this.state.formValue.email} fullWidth label="Email" variant="outlined" />
-                        </div>
-                        <div className={formInput} >
-                            <TextField onChange={this.handleChange} name="soDt" value={this.state.formValue.soDt} fullWidth label="Số ĐT" variant="outlined" />
-                        </div>
-                        <div style={{ display: "flex", justifyContent: "center" }}>
-                            <Button type="submit" variant="contained" color="primary">
-                                Cập nhật
-                            </Button>
-                        </div>
-                    </form>
-                </Container>
-                <Modal open={this.state.open} onClose={this.onCloseModal} center>
-                    <h2>{this.state.apiResult}</h2>
-                </Modal>
-            </Container>
-        )
-    }
+      <Modal open={open} onClose={onCloseModal}>
+        <ModalContent>
+          <Typography variant="h6">{apiResult}</Typography>
+        </ModalContent>
+      </Modal>
+    </Container>
+  );
+};
 
-    componentDidMount() {
-        this.setState({
-            formValue: {
-                taiKhoan: this.props.account.taiKhoan,
-                matKhau: this.props.account.matKhau,
-                hoTen: this.props.account.hoTen,
-                soDt: this.props.account.soDT,
-                email: this.props.account.email,
-                maLoaiNguoiDung: "khachHang",
-                maNhom: "GP01"
-            }
-        })
-    }
-}
-
-export default connect()(withStyles(styles)(AccountInfor))
+export default AccountInfor;

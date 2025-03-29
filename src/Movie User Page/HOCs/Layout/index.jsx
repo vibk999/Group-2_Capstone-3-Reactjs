@@ -1,18 +1,29 @@
-import React, { Component } from 'react'
-import { Container } from "@material-ui/core"
-import Footer from '../../components/Footer'
-import Header from '../../components/Header'
+import React from "react";
+import { Container, Box } from "@mui/material";
+import Footer from "../../components/Footer";
+import Header from "../../components/Header";
+import { useEffect } from "react";
+import { useSelector } from "react-redux";
+import { useNavigate } from "react-router";
 
-export default class Layout extends Component {
-    render() {
-        return (
-            <Container fluid maxWidth="lg" style={{ backgroundColor: "#fffff0", padding: "0px" }}>
-                <Header></Header>
+const Layout = ({ children }) => {
+  const { me } = useSelector((state) => state.user);
+  let navigate = useNavigate();
 
-                {this.props.children}
-
-                <Footer></Footer>
-            </Container>
-        )
+  useEffect(() => {
+    if (!me) {
+      navigate("/movie/signIn");
     }
-}
+  }, [me]);
+  return (
+    <Box sx={{ backgroundColor: "#fffff0", minHeight: "100vh" }}>
+      <Container maxWidth="lg" sx={{ padding: 0 }}>
+        <Header />
+        <Box sx={{ minHeight: "calc(100vh - 160px)" }}>{children}</Box>{" "}
+        <Footer />
+      </Container>
+    </Box>
+  );
+};
+
+export default Layout;

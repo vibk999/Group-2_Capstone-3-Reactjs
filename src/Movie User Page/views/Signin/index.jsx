@@ -1,43 +1,49 @@
 import React, { useState } from "react";
-import { TextField, Container, Button } from "@material-ui/core";
+import { TextField, Container, Button, Typography } from "@mui/material"; // MUI v5
 import Header from "../../components/Header";
+import { useDispatch } from "react-redux";
 import { signIn } from "../../store/action/auth";
-import { connect } from "react-redux";
+import { useNavigate } from "react-router";
 
-const SignIn = (props) => {
+const SignIn = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
   const [formSignIn, setFormSignIn] = useState({
     taiKhoan: "",
     matKhau: "",
   });
 
   const handleChange = (event) => {
-    console.log(event.target.name, event.target.value);
-    setFormSignIn({
-      ...formSignIn,
-      [event.target.name]: event.target.value,
-    });
+    const { name, value } = event.target;
+    setFormSignIn((prevForm) => ({
+      ...prevForm,
+      [name]: value,
+    }));
   };
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    props.dispatch(
+    dispatch(
       signIn(formSignIn, () => {
-        props.history.push("/");
+        navigate("/movie");
       })
     );
   };
 
   const handleSetDefaultUser = () => {
     setFormSignIn({
-      taiKhoan: "danhngo2302",
+      taiKhoan: "HoangNNT",
       matKhau: "12345678",
     });
   };
 
   return (
-    <Container maxWidth="lg" style={{ padding: "0px" }}>
+    <Container maxWidth="lg" sx={{ padding: 0 }}>
       <Header />
-      <h1 style={{ textAlign: "center" }}>Đăng Nhập</h1>
+      <Typography variant="h4" align="center" gutterBottom>
+        Đăng Nhập
+      </Typography>
       <Container maxWidth="sm">
         <form onSubmit={handleSubmit}>
           <div style={{ marginBottom: 30 }}>
@@ -62,7 +68,12 @@ const SignIn = (props) => {
             />
           </div>
           <div>
-            <Button type="submit" variant="contained" color="primary">
+            <Button
+              type="submit"
+              variant="contained"
+              color="primary"
+              sx={{ mr: 2 }}
+            >
               Đăng Nhập
             </Button>
             <Button
@@ -80,4 +91,4 @@ const SignIn = (props) => {
   );
 };
 
-export default connect()(SignIn);
+export default SignIn;

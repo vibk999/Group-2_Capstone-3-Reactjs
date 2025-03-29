@@ -1,102 +1,147 @@
 import { request } from "../../api/request";
-import { actionType } from "../type/type";
-import { createAction } from "./action";
+import { createAsyncThunk } from "@reduxjs/toolkit";
+import {
+  setCinemaListSeat,
+  setMovieBanner,
+  setMovieCinema,
+  setMovieDetail,
+  setMovieList,
+} from "../reducers/movieSlice";
 
-// async action
-export const fetchMovieList = (dispatch) => {
-  request({
-    method: "GET",
-    url: "https://movienew.cybersoft.edu.vn/api/QuanLyPhim/LayDanhSachPhim?maNhom=GP01",
-  })
-    .then((res) => {
-      console.log("res fetchMovieList", res.data);
-      dispatch(createAction(actionType.SET_MOVIE_LIST, res.data.content));
-    })
-    .catch((err) => {
-      console.log("error fetchMovieList", { ...err });
-    });
-};
-
-export const fetchMovieDetail = (id) => {
-  return (dispatch) => {
-    request({
-      method: "GET",
-      url: "https://movienew.cybersoft.edu.vn/api/QuanLyPhim/LayThongTinPhim",
-      params: {
-        MaPhim: id,
-      },
-    })
-      .then((res) => {
-        console.log("res fetchMovieDetail", res.data);
-        dispatch(createAction(actionType.SET_MOVIE_DETAIL, res.data.content));
-      })
-      .catch((err) => {
-        console.log("error fetchMovieDetail", { ...err });
+// Fetch Movie List with createAsyncThunk
+export const fetchMovieList = createAsyncThunk(
+  "movies/fetchMovieList",
+  async (_, { dispatch, rejectWithValue }) => {
+    try {
+      const response = await request({
+        method: "GET",
+        url: "https://movienew.cybersoft.edu.vn/api/QuanLyPhim/LayDanhSachPhim?maNhom=GP01",
       });
-  };
-};
 
-export const fetchMovieBanner = (dispatch) => {
-  request({
-    method: "GET",
-    url: "https://movienew.cybersoft.edu.vn/api/QuanLyPhim/LayDanhSachBanner",
-  })
-    .then((res) => {
-      console.log("res fetchMovieBanner", res.data);
-      dispatch(createAction(actionType.SET_MOVIE_BANNER, res.data.content));
-    })
-    .catch((err) => {
-      console.log("error fetchMovieBanner", { ...err });
-    });
-};
+      console.log("res fetchMovieList", response.data.content);
+      dispatch(setMovieList(response.data.content));
+    } catch (error) {
+      console.error("Error fetching movie list", error);
+      return rejectWithValue(
+        error?.response?.data?.content || "Failed to fetch movies!"
+      );
+    }
+  }
+);
 
-export const fetchMovieCinema = (dispatch) => {
-  request({
-    method: "GET",
-    url: "https://movienew.cybersoft.edu.vn/api/QuanLyRap/LayThongTinLichChieuHeThongRap?maNhom=GP01",
-  })
-    .then((res) => {
-      console.log("res fetchMovieCinema", res.data);
-      dispatch(createAction(actionType.SET_MOVIE_CINEMA, res.data.content));
-    })
-    .catch((err) => {
-      console.log("error fetchMovieCinema", { ...err });
-    });
-};
-
-export const fetchCinemaListSeat = (maLichChieu) => {
-  return (dispatch) => {
-    request({
-      method: "GET",
-      url: "https://movienew.cybersoft.edu.vn/api/QuanLyDatVe/LayDanhSachPhongVe",
-      params: {
-        MaLichChieu: maLichChieu,
-      },
-    })
-      .then((res) => {
-        console.log("res fetchCinemaListSeat", res.data);
-        dispatch(
-          createAction(actionType.SET_CINEMA_LIST_SEAT, res.data.content)
-        );
-      })
-      .catch((err) => {
-        console.log("error fetchCinemaListSeat", { ...err });
+// Fetch Movie Detail
+export const fetchMovieDetail = createAsyncThunk(
+  "movies/fetchMovieDetail",
+  async (id, { dispatch, rejectWithValue }) => {
+    try {
+      const response = await request({
+        method: "GET",
+        url: "https://movienew.cybersoft.edu.vn/api/QuanLyPhim/LayThongTinPhim",
+        params: { MaPhim: id },
       });
-  };
-};
 
-export const postDatVe = (contentData) => {
-  return (dispatch) => {
-    request({
-      method: "POST",
-      url: "https://movienew.cybersoft.edu.vn/api/QuanLyDatVe/DatVe",
-      data: contentData,
-    })
-      .then((res) => {
-        console.log("res postDatVe", res.data);
-      })
-      .catch((err) => {
-        console.log("error postDatVe", { ...err });
+      console.log("res fetchMovieDetail", response.data);
+      dispatch(setMovieDetail(response.data.content));
+    } catch (error) {
+      console.error("Error fetching movie detail", error);
+      return rejectWithValue(
+        error?.response?.data?.content || "Failed to fetch movie detail!"
+      );
+    }
+  }
+);
+
+export const fetchMovieBanner = createAsyncThunk(
+  "movies/fetchMovieBanner",
+  async (_, { dispatch, rejectWithValue }) => {
+    try {
+      const response = await request({
+        method: "GET",
+        url: "https://movienew.cybersoft.edu.vn/api/QuanLyPhim/LayDanhSachBanner",
       });
-  };
-};
+
+      console.log("res fetchMovieBanner", response.data);
+      dispatch(setMovieBanner(response.data.content));
+    } catch (error) {
+      console.error("Error fetching movie banner", error);
+      return rejectWithValue(
+        error?.response?.data?.content || "Failed to fetch movie banner!"
+      );
+    }
+  }
+);
+
+// Fetch Movie Cinema Information
+export const fetchMovieCinema = createAsyncThunk(
+  "movies/fetchMovieCinema",
+  async (_, { dispatch, rejectWithValue }) => {
+    try {
+      const response = await request({
+        method: "GET",
+        url: "https://movienew.cybersoft.edu.vn/api/QuanLyRap/LayThongTinLichChieuHeThongRap?maNhom=GP01",
+      });
+
+      console.log("res fetchMovieCinema", response.data);
+      dispatch(setMovieCinema(response.data.content));
+    } catch (error) {
+      console.error("Error fetching movie cinema", error);
+      return rejectWithValue(
+        error?.response?.data?.content || "Failed to fetch cinema information!"
+      );
+    }
+  }
+);
+
+// Fetch Cinema List Seat
+export const fetchCinemaListSeat = createAsyncThunk(
+  "movies/fetchCinemaListSeat",
+  async (maLichChieu, { dispatch, rejectWithValue }) => {
+    try {
+      const response = await request({
+        method: "GET",
+        url: "https://movienew.cybersoft.edu.vn/api/QuanLyDatVe/LayDanhSachPhongVe",
+        params: { MaLichChieu: maLichChieu },
+      });
+
+      console.log("res fetchCinemaListSeat", response.data);
+      dispatch(setCinemaListSeat(response.data.content));
+    } catch (error) {
+      console.error("Error fetching cinema seat list", error);
+      return rejectWithValue(
+        error?.response?.data?.content || "Failed to fetch cinema seat list!"
+      );
+    }
+  }
+);
+
+// Post Booking (Dat Ve)
+export const postDatVe = createAsyncThunk(
+  "movies/postDatVe",
+  async (contentData, { rejectWithValue }) => {
+    try {
+      const response = await request({
+        method: "POST",
+        url: "https://movienew.cybersoft.edu.vn/api/QuanLyDatVe/DatVe",
+        data: contentData,
+      });
+
+      console.log("res postDatVe", response.data);
+      return response.data; // Return result to use if needed
+    } catch (error) {
+      console.error("Error posting booking data", error);
+      return rejectWithValue(
+        error?.response?.data?.content || "Failed to book the ticket!"
+      );
+    }
+  }
+);
+// export const fetchMovieList = () => {
+
+//   return https.get("/api/QuanLyPhim/LayDanhSachPhim?maNhom=GP01");
+// };
+
+// export const fetchMovieDetail = (id) => {
+//   // const url = `/api/QuanLyPhim/LayThongTinPhim?MaPhim=${id}`;
+
+//   return https.get(`/api/QuanLyPhim/LayThongTinPhim?MaPhim=${id}`);
+// };

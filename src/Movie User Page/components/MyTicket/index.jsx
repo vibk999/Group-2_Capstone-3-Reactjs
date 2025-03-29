@@ -1,87 +1,115 @@
-import { Avatar, Card, CardContent, CardHeader, CardMedia, Grid, Typography, withStyles } from '@material-ui/core'
-import React, { Component } from 'react'
-import { connect } from 'react-redux'
-import { styles } from "./style"
+import React from "react";
+import {
+  Avatar,
+  Card,
+  CardContent,
+  CardHeader,
+  CardMedia,
+  Grid,
+  Typography,
+} from "@mui/material";
 
-class MyTicket extends Component {
-    render() {
-        const { hoTen, email, thongTinTungVe } = this.props;
-        return (
-            <Card style={{ maxWidth: 350, minWidth: 350 }}>
-                <CardHeader
-                    avatar={
-                        <Avatar
-                            alt="Phuc Danh"
-                            src="https://picsum.photos/200"
-                            style={{ width: "40px", height: "40px" }}
-                        />
-                    }
-                    title={hoTen}
-                    subheader={email}
-                />
-                <CardMedia
-                    component="img"
-                    height="400"
-                    image={thongTinTungVe.hinhAnh}
-                    alt={thongTinTungVe.maVe}
-                />
-                <CardContent>
-                    <Grid container>
-                        <Grid item xs={5}>
-                            <Typography style={{ color: "#AED6F1", fontWeight: "800" }}>Hệ thống rạp</Typography>
-                        </Grid>
-                        <Grid item xs={7}>
-                            <Typography>: {thongTinTungVe.danhSachGhe[0].tenHeThongRap}</Typography>
-                        </Grid>
-                    </Grid>
-                    <Grid container>
-                        <Grid item xs={5}>
-                            <Typography style={{ color: "#AED6F1", fontWeight: "800" }}>Tên rạp</Typography>
-                        </Grid>
-                        <Grid item xs={7}>
-                            <Typography>: {thongTinTungVe.danhSachGhe[0].tenRap}</Typography>
-                        </Grid>
-                    </Grid>
-                    <Grid container>
-                        <Grid item xs={5}>
-                            <Typography style={{ color: "#AED6F1", fontWeight: "800" }}>Tên phim</Typography>
-                        </Grid>
-                        <Grid item xs={7}>
-                            <Typography>: {thongTinTungVe.tenPhim}</Typography>
-                        </Grid>
-                    </Grid>
-                    <Grid container>
-                        <Grid item xs={5}>
-                            <Typography style={{ color: "#AED6F1", fontWeight: "800" }}>Thời luọng</Typography>
-                        </Grid>
-                        <Grid item xs={7}>
-                            <Typography>: {thongTinTungVe.thoiLuongPhim + " min"}</Typography>
-                        </Grid>
-                    </Grid>
-                    <Grid container>
-                        <Grid item xs={5}>
-                            <Typography style={{ color: "#AED6F1", fontWeight: "800" }}>Ghế</Typography>
-                        </Grid>
-                        <Grid item xs={7}>
-                            <Typography>: {
-                                thongTinTungVe.danhSachGhe.map((item) => {
-                                    return "[" + item.tenGhe + "] ";
-                                })
-                            }</Typography>
-                        </Grid>
-                    </Grid>
-                    <Grid container>
-                        <Grid item xs={5}>
-                            <Typography style={{ color: "#AED6F1", fontWeight: "800" }}>Giá vé</Typography>
-                        </Grid>
-                        <Grid item xs={7}>
-                            <Typography>: {thongTinTungVe.giaVe * thongTinTungVe.danhSachGhe.length + " VND"}</Typography>
-                        </Grid>
-                    </Grid>
-                </CardContent>
-            </Card>
-        )
-    }
-}
+const MyTicket = ({ hoTen, email, thongTinTungVe }) => {
+  return (
+    <Card sx={{ maxWidth: 350, minWidth: 350 }}>
+      <CardHeader
+        avatar={
+          <Avatar
+            alt="Khanh Vinh"
+            src="https://variety.com/wp-content/uploads/2020/08/avatar-the-last-airbender-3.jpg"
+            sx={{ width: 40, height: 40 }}
+          />
+        }
+        title={hoTen}
+        subheader={email}
+      />
+      <CardMedia
+        component="img"
+        height="400"
+        image={thongTinTungVe.hinhAnh}
+        alt={thongTinTungVe.maVe}
+      />
+      <CardContent>
+        <Grid container>
+          <Grid item xs={5}>
+            <Typography sx={{ color: "#AED6F1", fontWeight: "800" }}>
+              Hệ thống rạp
+            </Typography>
+          </Grid>
+          <Grid item xs={7}>
+            <Typography>
+              : {thongTinTungVe.danhSachGhe[0].tenHeThongRap}
+            </Typography>
+          </Grid>
+        </Grid>
 
-export default connect()(withStyles(styles)(MyTicket))
+        <Grid container>
+          <Grid item xs={5}>
+            <Typography sx={{ color: "#AED6F1", fontWeight: "800" }}>
+              Tên rạp
+            </Typography>
+          </Grid>
+          <Grid item xs={7}>
+            <Typography>: {thongTinTungVe.danhSachGhe[0].tenRap}</Typography>
+          </Grid>
+        </Grid>
+
+        <Grid container>
+          <Grid item xs={5}>
+            <Typography sx={{ color: "#AED6F1", fontWeight: "800" }}>
+              Tên phim
+            </Typography>
+          </Grid>
+          <Grid item xs={7}>
+            <Typography>: {thongTinTungVe.tenPhim}</Typography>
+          </Grid>
+        </Grid>
+
+        <Grid container>
+          <Grid item xs={5}>
+            <Typography sx={{ color: "#AED6F1", fontWeight: "800" }}>
+              Thời lượng
+            </Typography>
+          </Grid>
+          <Grid item xs={7}>
+            <Typography>: {`${thongTinTungVe.thoiLuongPhim} min`}</Typography>
+          </Grid>
+        </Grid>
+
+        <Grid container>
+          <Grid item xs={5}>
+            <Typography sx={{ color: "#AED6F1", fontWeight: "800" }}>
+              Ghế
+            </Typography>
+          </Grid>
+          <Grid item xs={7}>
+            <Typography>
+              :{" "}
+              {thongTinTungVe.danhSachGhe.map((item, index) => (
+                <span key={index}>[{item.tenGhe}] </span>
+              ))}
+            </Typography>
+          </Grid>
+        </Grid>
+
+        <Grid container>
+          <Grid item xs={5}>
+            <Typography sx={{ color: "#AED6F1", fontWeight: "800" }}>
+              Giá vé
+            </Typography>
+          </Grid>
+          <Grid item xs={7}>
+            <Typography>
+              :{" "}
+              {`${
+                thongTinTungVe.giaVe * thongTinTungVe.danhSachGhe.length
+              } VND`}
+            </Typography>
+          </Grid>
+        </Grid>
+      </CardContent>
+    </Card>
+  );
+};
+
+export default MyTicket;

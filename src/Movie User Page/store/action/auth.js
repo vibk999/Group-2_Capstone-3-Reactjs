@@ -1,40 +1,63 @@
-import { actionType } from "../type/type";
-import { createAction } from "../action/action";
 import { request } from "../../api/request";
+import { createAsyncThunk } from "@reduxjs/toolkit";
+import { setAccountInfor, setMe } from "../reducers/userSlice";
 
+// Redux Thunk for User Sign-In
 export const signIn = (userLogin, callBack) => {
-  return (dispatch) => {
-    request({
-      method: "POST",
-      url: "https://movienew.cybersoft.edu.vn/api/QuanLyNguoiDung/DangNhap",
-      data: userLogin,
-      headers: {
-        TokenCybersoft: localStorage.getItem("tokenCyberSoft"),
-      },
-    })
-      .then((res) => {
-        console.log(res.data.content);
-        dispatch(createAction(actionType.SET_ME, res.data.content));
-        localStorage.setItem("tokenSignIn", res.data.content.accessToken);
-        callBack();
-      })
-      .catch((err) => {
-        console.log("error sign in", { ...err });
-        alert(err.response.data.content);
+  return async (dispatch) => {
+    try {
+      const response = await request({
+        method: "POST",
+        url: "https://movienew.cybersoft.edu.vn/api/QuanLyNguoiDung/DangNhap",
+        data: userLogin,
       });
+
+      console.log(response.data.content);
+      dispatch(setMe(response.data.content));
+
+      localStorage.setItem("tokenSignIn", response.data.content.accessToken);
+
+      if (callBack) callBack();
+    } catch (error) {
+      console.error("Error during sign-in:", error);
+
+      // Displaying error message if it exists
+      const errorMessage = error?.response?.data?.content || "Sign-in failed!";
+      alert(errorMessage);
+    }
   };
 };
 
-export const fetchMe = (dispatch) => {
-  request({
-    method: "POST",
-    url: "https://movienew.cybersoft.edu.vn/api/QuanLyNguoiDung/ThongTinTaiKhoan",
-  })
-    .then((res) => {
-      console.log("res get user infor", res);
-      dispatch(createAction(actionType.SET_ACCOUNT_INFOR, res.data.content));
-    })
-    .catch((err) => {
-      console.log("error get user infor", { ...err });
+// Redux Thunk for Fetching User Information
+export const fetchMe = createAsyncThunk(
+  "user/fetchMe",
+  async (_, { dispatch, rejectWithValue }) => {
+    try {
+      const response = await request({
+        method: "POST",
+        url: "https://movienew.cybersoft.edu.vn/api/QuanLyNguoiDung/ThongTinTaiKhoan",
+      });
+
+      console.log("User information fetched successfully:", response);
+      dispatch(setAccountInfor(response.data.content));
+    } catch (error) {
+      console.error("Error fetching user information:", error);
+
+      // Return a custom error message or reject value
+      return rejectWithValue(
+        error?.response?.data?.content || "Failed to fetch user information!"
+      );
+    }
+  }
+);
+export const updateAccountInfo = createAsyncThunk(
+  "account/updateAccountInfo",
+  async (formData) => {
+    const response = await request({
+      method: "PUT",
+      url: "https://movienew.cybersoft.edu.vn/api/QuanLyNguoiDung/CapNhatThongTinNguoiDung",
+      data: formData,
     });
-};
+    return response.data;
+  }
+);

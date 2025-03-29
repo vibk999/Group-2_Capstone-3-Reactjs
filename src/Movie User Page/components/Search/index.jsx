@@ -1,56 +1,45 @@
-import React, { Component } from 'react'
-import { Box, Grid, TextField } from "@material-ui/core"
-import MovieItem from '../MovieItem'
-import { Autocomplete } from '@material-ui/lab'
+import React, { useState } from "react";
+import { Box, Grid, TextField } from "@mui/material";
+import Autocomplete from "@mui/material/Autocomplete";
+import MovieItem from "../MovieItem";
 
-export default class Search extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            arrSearch: [],
-        }
-    }
+const Search = ({ movieList, checkSearching }) => {
+  const [arrSearch, setArrSearch] = useState([]);
 
-    handleSearchChange = (event, value) => {
-        console.log("search", event, value)
-        this.setState({
-            arrSearch: [...value]
-        });
-        this.props.checkSearching(value);
-    }
+  const handleSearchChange = (event, value) => {
+    console.log("search", event, value);
+    setArrSearch([...value]);
+    checkSearching(value);
+  };
 
-    render() {
-        return (
-            <Box>
-                <Grid style={{ margin: "10px 30px", padding: "20px 50px" }}>
-                    <Autocomplete
-                        multiple
-                        id="tags-outlined"
-                        options={[...this.props.movieList]}
-                        getOptionLabel={(option) => option.tenPhim}
-                        onChange={this.handleSearchChange}
-                        filterSelectedOptions
-                        renderInput={(params) => (
-                            <TextField
-                                {...params}
-                                label="Search Films"
-                                placeholder="Favorites"
-                            />
-                        )}
-                    />
-                </Grid>
-                <Grid container spacing={2}>
-                    {
-                        this.state.arrSearch.map((item) => {
-                            return (
-                                <Grid key={item.maPhim} xs={12} sm={6} md={3} item>
-                                    <MovieItem item={item}></MovieItem>
-                                </Grid>
-                            )
-                        })
-                    }
-                </Grid>
-            </Box>
-        )
-    }
-}
+  return (
+    <Box>
+      <Grid sx={{ margin: "10px 30px", padding: "20px 50px" }}>
+        <Autocomplete
+          multiple
+          id="tags-outlined"
+          options={movieList}
+          getOptionLabel={(option) => option.tenPhim}
+          onChange={handleSearchChange}
+          filterSelectedOptions
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              label="Search Films"
+              placeholder="Favorites"
+            />
+          )}
+        />
+      </Grid>
+      <Grid container spacing={2}>
+        {arrSearch.map((item) => (
+          <Grid key={item.maPhim} item xs={12} sm={6} md={3}>
+            <MovieItem item={item} />
+          </Grid>
+        ))}
+      </Grid>
+    </Box>
+  );
+};
+
+export default Search;

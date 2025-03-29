@@ -1,109 +1,145 @@
-import React, { Component, Fragment } from 'react'
-import { NavLink } from "react-router-dom"
-import { AppBar, Toolbar, Typography, Button, IconButton, withStyles, MenuItem, Menu } from "@material-ui/core"
-import { AccountCircle } from "@material-ui/icons"
-import { Movie } from "@material-ui/icons"
-import { styles } from "./style"
-import { connect } from 'react-redux'
-import { actionType } from '../../store/type/type'
-import { createAction } from '../../store/action/action'
-import { fetchMe } from '../../store/action/auth'
+import React, { Fragment, useState, useEffect } from "react";
+import {
+  AppBar,
+  Toolbar,
+  Typography,
+  Button,
+  IconButton,
+  MenuItem,
+  Menu,
+} from "@mui/material";
+import { AccountCircle, Movie } from "@mui/icons-material";
+import { useSelector, useDispatch } from "react-redux";
+import { fetchMe } from "../../store/action/auth";
+import { setMe } from "../../store/reducers/userSlice";
+import { NavLink } from "react-router";
 
-class Header extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            anchorEl: undefined
-        }
-    }
+const Header = () => {
+  const [anchorEl, setAnchorEl] = useState(null);
+  const open = Boolean(anchorEl);
+  const { accountInfor } = useSelector((state) => state.user); // lấy thông tin user từ redux store
+  const dispatch = useDispatch();
 
-    handleClick = (event) => {
-        this.setState({
-            anchorEl: event.currentTarget
-        });
-    };
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
 
-    handleLogOut = () => {
-        localStorage.removeItem("tokenSignIn");
-        this.props.dispatch(createAction(
-            actionType.SET_ME,
-            {}
-        ))
-    };
-    handleClose = () => {
-        this.setState({
-            anchorEl: null
-        });
-    };
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
 
-    render() {
-        const { tittle, navLink, activeNavLink } = this.props.classes;
-        const open = Boolean(this.state.anchorEl);
-        return (
-            <AppBar position="static">
-                <Toolbar>
-                    <NavLink className={navLink} activeClassName={activeNavLink} component={Button} exact to="/">
-                        <IconButton color="inherit" aria-label="Menu">
-                            <Movie></Movie>
-                        </IconButton>
-                    </NavLink>
-                    <Typography className={tittle} variant="h6" color="inherit">
-                        Booking Movie
-                    </Typography>
-                    {
-                        // localStorage.getItem("tokenSignIn") ? (
-                        this.props.accountInfor ? (
-                            <Fragment>
-                                <Button
-                                    id="basic-button"
-                                    aria-controls="basic-menu"
-                                    aria-haspopup="true"
-                                    aria-expanded={open ? 'true' : undefined}
-                                    onClick={this.handleClick}
-                                    style={{ fontSize: "30px" }}
-                                >
-                                    <AccountCircle style={{ fontSize: "50px", margin: "0px" }} />
-                                    <Typography style={{ fontWeight: "bold" }} className={`${navLink} ${activeNavLink}`}>
-                                        {this.props.accountInfor.hoTen}
-                                    </Typography>
-                                </Button>
-                                <Menu
-                                    id="basic-menu"
-                                    anchorEl={this.state.anchorEl}
-                                    open={open}
-                                    onClose={this.handleClose}
-                                    MenuListProps={{
-                                        'aria-labelledby': 'basic-button',
-                                    }}
-                                >
-                                    <MenuItem onClick={this.handleMyProfile}>
-                                        <NavLink style={{ textDecoration: "none" }} exact to="/myAccount">My Profile</NavLink>
-                                    </MenuItem>
-                                    <MenuItem onClick={this.handleLogOut}>
-                                        <NavLink style={{ textDecoration: "none" }} exact to="/signin">Logout</NavLink>
-                                    </MenuItem>
-                                    <MenuItem onClick={this.handleClose}>
-                                        <NavLink style={{ textDecoration: "none" }} exact to="/">Close</NavLink>
-                                    </MenuItem>
-                                </Menu>
-                            </Fragment>
-                        ) : (
-                            <Fragment>
-                                <NavLink className={navLink} activeClassName={activeNavLink} component={Button} exact to="/signin">Đăng nhập</NavLink>
-                                <NavLink className={navLink} activeClassName={activeNavLink} component={Button} exact to="/signup">Đăng kí</NavLink>
-                            </Fragment>
-                        )
-                    }
-                </Toolbar>
-            </AppBar>
-        )
-    }
+  const handleLogOut = () => {
+    localStorage.removeItem("tokenSignIn");
+    dispatch(setMe(null));
+    window.location.href = "/movie/signIn";
+  };
 
-    componentDidMount() {
-        this.props.dispatch(fetchMe);
-    }
-}
+  useEffect(() => {
+    dispatch(fetchMe()); // Lấy thông tin người dùng khi component mount
+  }, [dispatch]);
 
-const mapStateToProps = (state) => ({ accountInfor: state.myAccount.accountInfor })
+  return (
+    <AppBar position="static">
+      <Toolbar>
+        <NavLink to="/" style={{ textDecoration: "none" }}>
+          <IconButton color="inherit">
+            <Movie />
+          </IconButton>
+        </NavLink>
 
-export default connect(mapStateToProps)(withStyles(styles)(Header));
+        <Typography
+          variant="h6"
+          sx={{
+            flexGrow: 1,
+            color: "#ffffff",
+            fontSize: "18px",
+            opacity: 1,
+          }}
+        >
+          Booking Movie
+        </Typography>
+
+        {accountInfor ? (
+          <Fragment>
+            <Button
+              id="basic-button"
+              aria-controls="basic-menu"
+              aria-haspopup="true"
+              aria-expanded={open ? "true" : undefined}
+              onClick={handleClick}
+              sx={{ fontSize: "30px", color: "#fff" }}
+            >
+              <AccountCircle sx={{ fontSize: "50px", margin: "0px" }} />
+              <Typography
+                sx={{
+                  fontWeight: "bold",
+                  color: "#fff",
+                  marginLeft: "10px",
+                  "&:hover": { color: "#00ffff" },
+                }}
+              >
+                {accountInfor.hoTen}
+              </Typography>
+            </Button>
+
+            <Menu
+              id="basic-menu"
+              anchorEl={anchorEl}
+              open={open}
+              onClose={handleClose}
+              MenuListProps={{
+                "aria-labelledby": "basic-button",
+              }}
+            >
+              <MenuItem onClick={handleClose}>
+                <NavLink
+                  to="/movie/myAccount"
+                  style={{ textDecoration: "none", color: "#000" }}
+                >
+                  My Profile
+                </NavLink>
+              </MenuItem>
+              <MenuItem onClick={handleLogOut}>
+                <NavLink
+                  to="/movie/signin"
+                  style={{ textDecoration: "none", color: "#000" }}
+                >
+                  Logout
+                </NavLink>
+              </MenuItem>
+              <MenuItem onClick={handleClose}>
+                <NavLink
+                  to="/movie"
+                  style={{ textDecoration: "none", color: "#000" }}
+                >
+                  Close
+                </NavLink>
+              </MenuItem>
+            </Menu>
+          </Fragment>
+        ) : (
+          <Fragment>
+            <NavLink to="/movie/signin" style={linkStyle}>
+              Đăng nhập
+            </NavLink>
+            <NavLink to="/movie/signup" style={linkStyle}>
+              Đăng kí
+            </NavLink>
+          </Fragment>
+        )}
+      </Toolbar>
+    </AppBar>
+  );
+};
+
+const linkStyle = {
+  color: "#fff",
+  marginLeft: "20px",
+  fontSize: "18px",
+  textDecoration: "none",
+  "&:hover": {
+    color: "#00ffff",
+  },
+};
+
+export default Header;
