@@ -175,7 +175,7 @@ const MyAccount = () => {
             <Box className="boxItem">
               <Avatar
                 alt="Batman"
-                src="../../../../public/IMG/avatar.jfif"
+                src="/IMG/avatar.jfif"
                 sx={{ width: "250px", height: "250px", marginBottom: "20px" }}
               />
             </Box>
