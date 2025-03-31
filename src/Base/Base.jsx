@@ -8,6 +8,7 @@ import {
   Paper,
   ImageList,
 } from "@mui/material";
+
 import { WidthFull } from "@mui/icons-material";
 
 // Các trang cơ bản
@@ -31,7 +32,7 @@ function Base() {
               maxWidth: { xs: 310, md: 450 },
             }}
             alt="movie"
-            src="../../public/IMG/movie.png"
+            src="/IMG/movie.png"
           />
           <Paper
             elevation={3}
@@ -61,8 +62,8 @@ function Base() {
               maxHeight: { xs: 233, md: 300 },
               maxWidth: { xs: 310, md: 450 },
             }}
-            alt="movie"
-            src="../../public/IMG/user.png"
+            alt="user"
+            src="/IMG/user.png"
           />
 
           <Paper
