@@ -31,7 +31,7 @@ function Base() {
               maxWidth: { xs: 310, md: 450 },
             }}
             alt="movie"
-            src="../../public/IMG/Movie.jfif"
+            src="../../public/IMG/movie.png"
           />
           <Paper
             elevation={3}
@@ -62,7 +62,7 @@ function Base() {
               maxWidth: { xs: 310, md: 450 },
             }}
             alt="movie"
-            src="../../public/IMG/user.jfif"
+            src="../../public/IMG/user.png"
           />
 
           <Paper
