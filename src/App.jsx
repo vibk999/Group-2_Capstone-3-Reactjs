@@ -11,6 +11,8 @@ import { fetchMe } from "./Movie User Page/store/action/auth";
 // import { AuthRoute, NormalRoute, PrivateRoute } from "./HOCs/Route";
 import MyAccount from "./Movie User Page/views/MyAccount";
 import Base from "./Base/Base";
+import NotFoundPage from "./Base/NotFoundPage/NotFoundPage";
+
 function App() {
   const dispatch = useDispatch();
   const tokenCyberSoft =
@@ -36,6 +38,7 @@ function App() {
         <Route path="/movie/signup" element={<SignUp />} />
         <Route path="/movie" element={<Home />} />
         <Route path="/" element={<Base />} />
+        <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </BrowserRouter>
   );
