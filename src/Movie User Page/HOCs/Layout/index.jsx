@@ -12,7 +12,7 @@ const Layout = ({ children }) => {
 
   useEffect(() => {
     if (!me) {
-      navigate("/movie/signIn");
+      navigate("/movie/signin");
     }
   }, [me]);
   return (
