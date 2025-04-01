@@ -1,14 +1,19 @@
-import React, { useState } from "react";
+import { useState, useEffect } from "react";
 import { TextField, Container, Button, Typography } from "@mui/material"; // MUI v5
 import Header from "../../components/Header";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { signIn } from "../../store/action/auth";
 import { useNavigate } from "react-router";
 
 const SignIn = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-
+  const { me } = useSelector((state) => state.user);
+  useEffect(() => {
+    if (me) {
+      navigate("/movie");
+    }
+  }, [me, navigate]);
   const [formSignIn, setFormSignIn] = useState({
     taiKhoan: "",
     matKhau: "",

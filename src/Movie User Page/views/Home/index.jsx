@@ -9,6 +9,7 @@ import MovieRowSlick from "../../components/ReactSlick/MovieRowSlick";
 import { styles } from "./style";
 import Layout from "../../HOCs/Layout";
 import Search from "../../components/Search";
+import { fetchMe } from "../../store/action/auth";
 
 export default function Home() {
   const [searching, setSearching] = useState(false);
@@ -18,6 +19,10 @@ export default function Home() {
   const dispatch = useDispatch();
 
   useEffect(() => {
+    const tokenSignIn = localStorage.getItem("USER");
+    if (tokenSignIn) {
+      dispatch(fetchMe);
+    }
     dispatch(fetchMovieList());
   }, [dispatch]);
 

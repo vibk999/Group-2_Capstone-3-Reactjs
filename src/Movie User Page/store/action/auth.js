@@ -11,11 +11,11 @@ export const signIn = (userLogin, callBack) => {
         url: "https://movienew.cybersoft.edu.vn/api/QuanLyNguoiDung/DangNhap",
         data: userLogin,
       });
-
       console.log(response.data.content);
       dispatch(setMe(response.data.content));
-
-      localStorage.setItem("tokenSignIn", response.data.content.accessToken);
+      const user = response.data.content;
+      const userJson = JSON.stringify(user);
+      localStorage.setItem("USER", userJson);
 
       if (callBack) callBack();
     } catch (error) {
@@ -39,6 +39,7 @@ export const fetchMe = createAsyncThunk(
       });
 
       console.log("User information fetched successfully:", response);
+      dispatch(setMe(response.data.content));
       dispatch(setAccountInfor(response.data.content));
     } catch (error) {
       console.error("Error fetching user information:", error);

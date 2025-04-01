@@ -29,7 +29,7 @@ const Header = () => {
   };
 
   const handleLogOut = () => {
-    localStorage.removeItem("tokenSignIn");
+    localStorage.removeItem("USER");
     dispatch(setMe(null));
     window.location.href = "/movie/signIn";
   };
