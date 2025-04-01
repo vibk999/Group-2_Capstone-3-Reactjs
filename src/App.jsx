@@ -1,5 +1,5 @@
 import "./App.css";
-import React, { useEffect } from "react";
+import React from "react";
 import Home from "./Movie User Page/views/Home";
 import Detail from "./Movie User Page/views/Detail";
 import SignIn from "./Movie User Page/views/Signin";

@@ -19,7 +19,7 @@ const Header = () => {
   const open = Boolean(anchorEl);
   const { accountInfor } = useSelector((state) => state.user); // lấy thông tin user từ redux store
   const dispatch = useDispatch();
-
+  // const navigate = useNavigate();
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -31,7 +31,8 @@ const Header = () => {
   const handleLogOut = () => {
     localStorage.removeItem("USER");
     dispatch(setMe(null));
-    window.location.href = "/movie/signIn";
+    // navigate("/movie/signIn");
+    location.reload();
   };
 
   useEffect(() => {
